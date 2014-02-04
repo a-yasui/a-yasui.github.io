@@ -1,0 +1,23 @@
+.mod-verticaltxt{
+    writing-mode: tb-rl;
+    -moz-writing-mode: vertical-rl;
+    -webkit-writing-mode: vertical-rl;
+    writing-mode: vertical-rl;
+}
+
+.mod-sample{
+    .writing-mode &{
+        width: 100%;    // Safariはpxで指定しないと意図通りにならない。
+        height: 300px;
+    }
+}
+
+.mod-text-01{
+    .writing-mode &{
+        p{
+            text-indent: 1em;
+            text-align: justify;
+            text-justify: inter-ideograph;
+        }
+    }
+}
