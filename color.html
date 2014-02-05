@@ -1,0 +1,180 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Atys.github.io by a-yasui</title>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="css/index.css">
+<style>
+body {
+  font-family: "Helvetica Neue", Helvetica, "Trebuchets MS", Arial, sans-serif;
+  transition-property: opacity, background;
+  -moz-transition-property: opacity, background;
+  -ms-transition-property: opacity, background;
+  -o-transition-property: opacity, background;
+  -webkit-transition-property: opacity, background;
+  transition-duration: 0.25s;
+  -moz-transition-duration: 0.25s;
+  -ms-transition-duration: 0.25s;
+  -o-transition-duration: 0.25s;
+  -webkit-transition-duration: 0.25s;
+  margin: 0;
+  overflow: hidden;
+  background: #fff;
+  opacity: 0;
+  font-size: 18px;
+  line-height: 1.2em;
+}
+h1 {
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 1em;
+  margin-bottom: 20px;
+}
+a {
+  color: #0030ff;
+}
+a:hover {
+  color: #ff0000;
+}
+canvas {
+  display: none;
+}
+#content div {
+  width: 50px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  height: 50px;
+  cursor: pointer;
+  z-index: 7;
+  display: block;
+  float: left;
+  border: 1px solid;
+  transition-property: transform;
+  -moz-transition-property: -moz-transform;
+  -ms-transition-property: transform;
+  -o-transition-property: transform;
+  -webkit-transition-property: transform;
+  transition-duration: .5s;
+  -moz-transition-duration: .5s;
+  -ms-transition-duration: .5s;
+  -o-transition-duration: .5s;
+  -webkit-transition-duration: .5s;
+}
+#quote {
+  letter-spacing: .01em;
+  background: #000000;
+  background: none repeat scroll 0 0 rgba(0, 0, 0, 0.8);
+  border: 2px solid #000000;
+  border-radius: 7px 7px 7px 7px;
+  -moz-border-radius: 7px 7px 7px 7px;
+  -webkit-border-radius: 7px 7px 7px 7px;
+  color: #FFFFFF;
+  font-family: Lato,arial;
+  font-size: 21px;
+  left: 52px;
+  line-height: 30px;
+  margin-left: auto;
+  padding: 21px;
+  position: absolute;
+  top: 52px;
+  width: 840px;
+}
+br {
+  clear: both;
+}
+
+</style>
+  </head>
+  <body>
+<div id="content"></div>
+<div id="quote">          <h1 class="header">Atys.github.io</h1>
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/a-yasui">a-yasui</a></p>
+</div>
+<canvas id="canvas" style="margin-top: 20px"></canvas>
+
+    <footer>
+      <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+    </footer>
+  </body>
+  <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+  <script src="js/Color.js"></script>
+  <script src="js/JPColor.js"></script>
+
+<script type="text/javascript">
+/* NO CANVAS SUPPORT */
+if (!document.createElement('canvas').getContext) {
+  document.getElementById('noCanvas').style.display = 'block';
+}
+
+var removeChildNodes = function(o) {
+  while (o.hasChildNodes()) {
+    o.removeChild(o.firstChild);
+  }
+};
+
+function setColors (a, b) {
+  var getContainer = function (id, container) {
+    id = "id:"+id;
+    if (document.getElementById(id))
+      return document.getElementById(id)
+    var d = document.createElement("div");
+    d.id = id;
+    container.appendChild(d);
+    return d;
+  };
+  var container = document.getElementById("content");
+  var element = document.getElementById("canvas");
+  var ctx = element.getContext("2d");
+
+  //
+  var size = 52; 
+  var height = Math.ceil(window.innerHeight / size);
+  var width = Math.ceil(window.innerWidth / size);
+  var data = ctx.getImageData(5, 0, width, height).data; // grab source pixels
+  //
+  document.body.style.width = (Math.ceil(window.innerWidth/size)*size) + "px";
+  var n = 0;
+  var length = data.length;
+  var color = [a,b];
+  var ptr = 0;
+  while ((n += 4) < length) { // loop through draw commands
+    var row = (n / length) * height;
+    var col = row % 1 * width;
+    var fillStyle = color[ptr % 2]; //"hsl(" + hsl.H + "," + hsl.S + "%," + hsl.L + "%)";
+    var div = document.createElement("div");
+    div.hexValue = Color.Space(color, "HSL>RGB>HEX>STRING");
+    div.style.background = fillStyle;
+    var div2 = getContainer(ptr, container);
+    div2.appendChild(div);
+    ptr += 1;
+  }
+  document.body.style.opacity = 1;
+  return ptr;
+}
+
+var redraw = 
+window.onresize = 
+function() {
+  var container = document.getElementById("content");
+  removeChildNodes(container);
+  setColors(JPColor[Math.floor(Math.random() * JPColor.length)], JPColor[Math.floor(Math.random() * JPColor.length)]);
+};
+
+var re_redraw =
+function () {
+  window.setTimeout( redraw, setColors("#fff", "#fff") * 10);
+}
+
+$(redraw);
+(function(callback) { window.setInterval(callback, 30000); })(re_redraw);
+</script>
+</html>
+
+<tbody><tr>
+
