@@ -118,40 +118,34 @@ var removeChildNodes = function(o) {
   }
 };
 
-function setColors (a, b) {
-  var getContainer = function (id, container) {
-    id = "id:"+id;
-    if (document.getElementById(id))
-      return document.getElementById(id)
-    var d = document.createElement("div");
-    d.id = id;
-    container.appendChild(d);
-    return d;
-  };
+var getContainer = function (id, container) {
+  id = "id:"+id;
+  if (document.getElementById(id))
+    return document.getElementById(id)
+  var d = document.createElement("div");
+  d.id = id;
+  container.appendChild(d);
+  return d;
+};
+function setColors (addAction) {
+  var wh = function (size) { return [Math.ceil(window.innerHeight / size), Math.ceil(window.innerWidth / size)]; }
   var container = document.getElementById("content");
   var element = document.getElementById("canvas");
   var ctx = element.getContext("2d");
 
   //
-  var size = 52; 
-  var height = Math.ceil(window.innerHeight / size);
-  var width = Math.ceil(window.innerWidth / size);
-  var data = ctx.getImageData(5, 0, width, height).data; // grab source pixels
+  var size = 52;
+  var wid_hei = wh(size);
+  var data = ctx.getImageData(5, 0, wid_hei[0], wid_hei[1]).data; // grab source pixels
   //
   document.body.style.width = (Math.ceil(window.innerWidth/size)*size) + "px";
   var n = 0;
   var length = data.length;
-  var color = [a,b];
   var ptr = 0;
   while ((n += 4) < length) { // loop through draw commands
-    var row = (n / length) * height;
-    var col = row % 1 * width;
-    var fillStyle = color[ptr % 2]; //"hsl(" + hsl.H + "," + hsl.S + "%," + hsl.L + "%)";
-    var div = document.createElement("div");
-    div.hexValue = Color.Space(color, "HSL>RGB>HEX>STRING");
-    div.style.background = fillStyle;
-    var div2 = getContainer(ptr, container);
-    div2.appendChild(div);
+    var row = (n / length) * wid_hei[1];
+    var col = row % 1 * wid_hei[0];
+    addAction(row, col, ptr, container);
     ptr += 1;
   }
   document.body.style.opacity = 1;
@@ -159,20 +153,47 @@ function setColors (a, b) {
 }
 
 var redraw = 
-window.onresize = 
 function() {
-  var container = document.getElementById("content");
-  removeChildNodes(container);
-  setColors(JPColor[Math.floor(Math.random() * JPColor.length)], JPColor[Math.floor(Math.random() * JPColor.length)]);
+  var color = [JPColor[Math.floor(Math.random() * JPColor.length)], JPColor[Math.floor(Math.random() * JPColor.length)]];
+  setColors(function (row, col, ptr, container) {
+    var div = document.createElement("div");
+    div.hexValue = Color.Space(color, "HSL>RGB>HEX>STRING");
+    div.style.background = color[ptr % 2];
+    var div2 = getContainer(ptr, container);
+    removeChildNodes(div2);
+    div2.appendChild(div);
+    console.log("Set id:" + ptr);
+  });
 };
 
 var re_redraw =
+window.onresize = 
 function () {
-  window.setTimeout( redraw, setColors("#fff", "#fff") * 10);
+  var color = [JPColor[Math.floor(Math.random() * JPColor.length)], JPColor[Math.floor(Math.random() * JPColor.length)]];
+  setColors(function (row, col, ptr, container) {
+    var div = document.createElement("div");
+    div.hexValue = Color.Space(color, "HSL>RGB>HEX>STRING");
+    div.style.background = color[ptr % 2];
+    var div2 = getContainer(ptr, container);
+      removeChildNodes(div2);
+    window.setTimeout(function(){div2.appendChild(div);}, 100);
+  });
 }
 
-$(redraw);
-(function(callback) { window.setInterval(callback, 30000); })(re_redraw);
+var initialize = 
+function (){
+  var color = [JPColor[Math.floor(Math.random() * JPColor.length)], JPColor[Math.floor(Math.random() * JPColor.length)]];
+  setColors(function (row, col, ptr, container) {
+    var div = document.createElement("div");
+    div.hexValue = Color.Space(color, "HSL>RGB>HEX>STRING");
+    div.style.background = "#fff";
+    var div2 = getContainer(ptr, container);
+    removeChildNodes(div2);
+    div2.appendChild(div);
+  });
+};
+$(initialize);
+(function(callback) { window.setInterval(callback, 10000); })(re_redraw);
 </script>
 </html>
 
