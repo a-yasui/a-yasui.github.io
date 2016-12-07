@@ -21,3 +21,12 @@
         }
     }
 }
+
+@font-face {
+    font-family: 'VanadineRegular';
+    src: url('/fonts/Vanadine Regular.woff'); /* IE9 Compat Modes */
+}
+
+.english-text{
+    font-family: VanadineRegular;
+}
